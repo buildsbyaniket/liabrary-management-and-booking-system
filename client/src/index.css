@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================= FLOATING BACKGROUND ================= */
+@keyframes floatY {
+  0% { transform: translateY(0px) }
+  50% { transform: translateY(-20px) }
+  100% { transform: translateY(0px) }
+}
+
+@keyframes floatYReverse {
+  0% { transform: translateY(0px) }
+  50% { transform: translateY(20px) }
+  100% { transform: translateY(0px) }
+}
+
+.animate-float {
+  animation: floatY 6s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatYReverse 7s ease-in-out infinite;
+}
+
+/* ================= 3D LOGO ================= */
+@keyframes logo3d {
+  0% {
+    transform: perspective(800px) rotateY(0deg) rotateX(0deg) translateY(0px);
+  }
+  50% {
+    transform: perspective(800px) rotateY(12deg) rotateX(6deg) translateY(-10px);
+  }
+  100% {
+    transform: perspective(800px) rotateY(0deg) rotateX(0deg) translateY(0px);
+  }
+}
+
+.animate-logo3d {
+  animation: logo3d 4s ease-in-out infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.logo-hover:hover {
+  transform: perspective(800px) rotateY(15deg) rotateX(8deg) scale(1.05);
+  transition: all 0.4s ease;
+}
+
+/* ================= FADE / ENTRY ================= */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeUp {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+/* ================= SCALE POP ================= */
+@keyframes scalePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scalePop {
+  animation: scalePop 0.35s ease forwards;
+}
+
+/* ================= ROW ANIMATION ================= */
+@keyframes slideFade {
+  0% {
+    opacity: 0;
+    transform: translateX(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-row {
+  animation: slideFade 0.4s ease forwards;
+}
+
+/* ================= MODAL ================= */
+@keyframes modalIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal {
+  animation: modalIn 0.3s ease forwards;
+}
+
+/* ================= CARD ================= */
+@keyframes cardPop {
+  0% {
+    opacity: 0;
+    transform: translateY(25px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-card {
+  animation: cardPop 0.4s ease forwards;
+}
