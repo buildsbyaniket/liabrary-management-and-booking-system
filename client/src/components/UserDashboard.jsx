@@ -23,6 +23,7 @@ import {
 
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUserBorrowedBooks } from "../store/slices/borrowSlice";
+import api from "../api/axios"; // ✅ ADD THIS
 
 ChartJS.register(
   CategoryScale,
@@ -65,16 +66,10 @@ const UserDashboard = () => {
 
   const hasData = totalBorrowedBooks + totalReturnedBooks > 0;
 
-  // =========================
-  // OPEN FILE SELECTOR
-  // =========================
   const handleImageClick = () => {
     fileInputRef.current.click();
   };
 
-  // =========================
-  // UPLOAD PROFILE IMAGE
-  // =========================
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -84,26 +79,19 @@ const UserDashboard = () => {
       formData.append("avatar", file);
       formData.append("name", user?.name || "");
 
-      const res = await fetch(
-        "https://liabrary-management-and-booking-system.onrender.com/api/v1/auth/profile/update",
-        {
-          method: "PUT",
-          credentials: "include",
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
+      // ✅ FIXED (ONLY axios, no fetch, no duplicate data)
+      const { data } = await api.put("/auth/profile/update", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       if (data.success) {
-        // refresh user data (better than reload)
         dispatch(fetchUserBorrowedBooks());
-        window.location.reload(); // optional fallback sync
+        window.location.reload();
       } else {
         console.log("UPLOAD FAILED:", data.message);
       }
     } catch (err) {
-      console.log("UPLOAD ERROR:", err);
+      console.log("UPLOAD ERROR:", err.response?.data || err.message);
     }
   };
 
@@ -113,10 +101,8 @@ const UserDashboard = () => {
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-        {/* LEFT */}
         <div className="xl:col-span-2 flex flex-col gap-6">
 
-          {/* PROFILE CARD */}
           <div className="flex items-center gap-4 bg-[#f4f6f9] border border-[#e2e6ea] p-5 rounded-xl shadow-sm">
 
             <img
@@ -129,7 +115,6 @@ const UserDashboard = () => {
               onClick={handleImageClick}
             />
 
-            {/* hidden file input */}
             <input
               type="file"
               accept="image/*"
@@ -145,7 +130,6 @@ const UserDashboard = () => {
 
           </div>
 
-          {/* CARDS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <div className="flex items-center gap-4 bg-[#f4f6f9] border border-[#e2e6ea] p-5 rounded-xl shadow-sm">
@@ -174,7 +158,6 @@ const UserDashboard = () => {
 
           </div>
 
-          {/* MIDDLE */}
           <div className="flex items-center justify-between bg-[#f4f6f9] border border-[#e2e6ea] p-5 rounded-xl shadow-sm">
 
             <div className="flex items-center gap-4">
@@ -193,7 +176,6 @@ const UserDashboard = () => {
             />
           </div>
 
-          {/* BOTTOM */}
           <div className="bg-[#f4f6f9] border border-[#e2e6ea] rounded-xl shadow-sm min-h-[220px] flex items-center justify-center relative">
             <p className="text-gray-400">No activity yet</p>
 
@@ -204,7 +186,6 @@ const UserDashboard = () => {
 
         </div>
 
-        {/* RIGHT */}
         <div className="flex flex-col items-center gap-6">
 
           <div className="w-full max-w-[320px] h-[320px] bg-[#f4f6f9] border border-[#e2e6ea] rounded-xl shadow-sm p-4">

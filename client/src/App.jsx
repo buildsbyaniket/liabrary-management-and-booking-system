@@ -21,7 +21,7 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-  if (!user) {
+  if (document.cookie.includes("token")) {
     dispatch(getUser());
   }
 }, [dispatch]);

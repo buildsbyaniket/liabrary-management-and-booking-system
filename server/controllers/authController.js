@@ -10,41 +10,47 @@ import { sendEmail } from "../utils/sendEmail.js";
 
 
 export const register = catchAsyncErrors(async (req, res, next) => {
-  const { name, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return next(new ErrorHandler("All fields required", 400));
-  }
+  try {
+    const { name, email, password } = req.body;
 
-  const existing = await User.findOne({ email });
+    if (!name || !email || !password) {
+      return next(new ErrorHandler("All fields required", 400));
+    }
 
-  if (existing && existing.accountVerified) {
-    return next(new ErrorHandler("User already exists", 400));
-  }
+    const existing = await User.findOne({ email });
 
-  if (existing && !existing.accountVerified) {
-    await User.deleteOne({ _id: existing._id });
-  }
+    if (existing && existing.accountVerified) {
+      return next(new ErrorHandler("User already exists", 400));
+    }
 
-  const user = await User.create({ name, email, password });
+    if (existing && !existing.accountVerified) {
+      await User.deleteOne({ _id: existing._id });
+    }
 
-  const otp = user.generateVerificationCode();
-  await user.save();
+    const user = await User.create({ name, email, password });
 
-  const sent = await sendVerificationCode(email, otp);
+    const otp = user.generateVerificationCode();
+    await user.save();
 
-  if (!sent) {
-    // 🔥 FIX: DO NOT CRASH SERVER
-    return res.status(200).json({
+    const sent = await sendVerificationCode(email, otp);
+
+    if (!sent) {
+      return res.status(200).json({
+        success: true,
+        message: "OTP generated (email failed, check logs)",
+      });
+    }
+
+    res.status(201).json({
       success: true,
-      message: "OTP generated (email failed, check console)",
+      message: "OTP sent successfully",
     });
-  }
 
-  res.status(201).json({
-    success: true,
-    message: "OTP sent successfully",
-  });
+  } catch (error) {
+    console.log("REGISTER ERROR:", error); // FIX: makes 500 visible
+    return next(new ErrorHandler(error.message, 500));
+  }
 });
 /* =========================
    VERIFY OTP (FIXED)

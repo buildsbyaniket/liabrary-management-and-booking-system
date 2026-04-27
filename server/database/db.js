@@ -1,4 +1,3 @@
-// server/database/db.js
 import mongoose from "mongoose";
 
 export const connectDB = async () => {
@@ -9,6 +8,7 @@ export const connectDB = async () => {
 
     console.log("Connected DB:", connection.connection.name);
   } catch (err) {
-    console.log("Error connecting to database", err);
+    console.log("Error connecting to database:", err.message);
+    process.exit(1);
   }
 };

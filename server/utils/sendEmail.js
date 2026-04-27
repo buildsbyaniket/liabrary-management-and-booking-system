@@ -2,8 +2,8 @@ import nodemailer from "nodemailer";
 
 export const sendEmail = async ({ email, subject, message }) => {
   try {
-    console.log("📧 Sending email to:", email);
-    console.log("📧 Using:", process.env.SMTP_MAIL);
+    console.log(" Sending email to:", email);
+    console.log(" Using:", process.env.SMTP_MAIL);
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -20,11 +20,11 @@ export const sendEmail = async ({ email, subject, message }) => {
       html: message,
     });
 
-    console.log("✅ EMAIL SENT SUCCESS");
+    console.log(" EMAIL SENT SUCCESS");
     return true;
 
   } catch (err) {
-    console.log("❌ EMAIL ERROR:", err.message);
+    console.log(" EMAIL ERROR:", err.message);
     return false;
   }
 };
