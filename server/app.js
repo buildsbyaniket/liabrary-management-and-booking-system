@@ -11,53 +11,51 @@ import bookRouter from "./routes/bookRouter.js";
 import borrowRouter from "./routes/borrowRouter.js";
 import userRouter from "./routes/userRouter.js";
 
-// ❌ TEMP DISABLE (important)
-// import { notifyUsers } from "./services/notifyUsers.js";
-// import { removeUnverifiedAccounts } from "./services/removeUnverifiedAccounts.js";
-
 config({ path: "./config/config.env" });
 
 const app = express();
 
 /* =========================
-   FIX 1: TRUST PROXY (KEEP - REQUIRED FOR RENDER COOKIES)
+   TRUST PROXY (RENDER REQUIRED)
 ========================= */
 app.set("trust proxy", 1);
 
 /* =========================
-   FIX 2: CORS (NO CHANGE BUT CRITICAL NOTE)
+   CORS (PRODUCTION SAFE)
 ========================= */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://liabrary-management-and-booking-system-2.onrender.com",
+  "https://liabrary-management-and-booking-system-2-client.onrender.com"
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://liabrary-management-and-booking-system-2-client.onrender.com",
-    ],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS blocked: " + origin));
+      }
+    },
     credentials: true,
   })
 );
 
 /* =========================
-   DB CONNECT
-========================= */
-connectDB();
-
-/* =========================
-   MIDDLEWARE ORDER FIX (IMPORTANT)
-   body parsing must come BEFORE file upload
+   BODY PARSERS
 ========================= */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 /* =========================
-   FIX 3: FILE UPLOAD SAFETY
-   (prevents undefined req.files crash)
+   FILE UPLOAD SAFETY
 ========================= */
 app.use(
   expressFileUpload({
     useTempFiles: true,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB safety cap
+    limits: { fileSize: 10 * 1024 * 1024 },
     abortOnLimit: true,
   })
 );
@@ -66,6 +64,12 @@ app.use(
    STATIC FILES
 ========================= */
 app.use("/uploads", express.static("uploads"));
+
+/* =========================
+   DB CONNECTION
+   (CRITICAL: MUST USE ATLAS ONLY)
+========================= */
+connectDB();
 
 /* =========================
    ROUTES
@@ -79,11 +83,11 @@ app.use("/api/v1/user", userRouter);
    HEALTH CHECK
 ========================= */
 app.get("/", (req, res) => {
-  res.send("Server Running");
+  res.status(200).send("Server Running");
 });
 
 /* =========================
-   ERROR HANDLING (KEEP LAST)
+   ERROR HANDLER (LAST)
 ========================= */
 app.use(errorMiddleware);
 
