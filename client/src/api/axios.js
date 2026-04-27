@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: "https://liabrary-management-and-booking-system-1.onrender.com/api/v1",
   withCredentials: true,
 });
 
